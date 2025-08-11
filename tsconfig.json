@@ -21,6 +21,7 @@
 
     /* Library specific */
     "declaration": true,
+    "emitDeclarationOnly": true,
     "outDir": "dist",
     "declarationDir": "dist"
   },
