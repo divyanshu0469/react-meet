@@ -73,7 +73,13 @@ function DevApp() {
 
   return (
     <div className="w-screen h-screen">
-      <MeetContainer remoteStreams={remoteStreams} />
+      <MeetContainer
+        remoteParticipants={Array.from(remoteStreams.values()).map((p) => ({
+          id: p.name,
+          stream: p.stream,
+          name: p.name,
+        }))}
+      />
     </div>
   );
 }

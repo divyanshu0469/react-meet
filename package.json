@@ -39,11 +39,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/react-meet.git"
+    "url": "https://github.com/divyanshu0469/react-meet.git"
   },
-  "homepage": "https://github.com/yourusername/react-meet#readme",
+  "homepage": "https://github.com/divyanshu0469/react-meet#readme",
   "bugs": {
-    "url": "https://github.com/yourusername/react-meet/issues"
+    "url": "https://github.com/divyanshu0469/react-meet/issues"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
