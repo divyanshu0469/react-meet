@@ -24,7 +24,6 @@ const SlideTabs = ({
           ...pv,
           ...selectedPosition,
         }));
-        console.log(position, selectedPosition);
       }}
       className="relative mx-auto flex w-fit rounded-full border-2 border-dark bg-light p-1"
     >

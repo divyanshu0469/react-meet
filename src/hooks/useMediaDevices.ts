@@ -72,7 +72,6 @@ export const useMediaDevices = (): MediaDeviceHookReturn => {
       includeAudio: boolean = false
     ): Promise<MediaStream | null> => {
       if (!navigator.mediaDevices?.getUserMedia) {
-        console.error("getUserMedia is not supported");
         return null;
       }
 
@@ -108,18 +107,13 @@ export const useMediaDevices = (): MediaDeviceHookReturn => {
 
         return stream;
       } catch (err) {
-        const error = err as Error;
-        console.error("Media stream error:", error);
-
         const errorMessages: Record<string, string> = {
           NotFoundError: "Device not found",
           NotAllowedError: "Permission denied",
           OverconstrainedError: "Device constraints not supported",
         };
-
-        const message = errorMessages[error.name] || "Unknown error";
+        const message = errorMessages[(err as Error).name] || "Unknown error";
         setError(message);
-        console.error(`Media error: ${message}`);
         return null;
       }
     },
@@ -197,7 +191,6 @@ export const useMediaDevices = (): MediaDeviceHookReturn => {
         return { cameras, microphones, speakers };
       });
     } catch (err) {
-      console.error("Failed to enumerate devices:", err);
       setError("Failed to enumerate devices");
     }
   }, [isInitialized]);
@@ -233,9 +226,8 @@ export const useMediaDevices = (): MediaDeviceHookReturn => {
     for (const audio of audioElements) {
       if ("setSinkId" in audio) {
         try {
-          await (audio as any).setSinkId(deviceId);
+          await (audio as HTMLAudioElement).setSinkId(deviceId);
         } catch (err) {
-          console.error("Failed to set audio output device:", err);
           setError("Failed to set audio output device");
         }
       }

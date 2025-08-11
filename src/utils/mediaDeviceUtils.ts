@@ -13,7 +13,6 @@ export const getAllCameras = async (): Promise<MediaDeviceInfo[]> => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     return devices.filter((device) => device.kind === "videoinput");
   } catch (error) {
-    console.error("Failed to get cameras:", error);
     return [];
   }
 };
@@ -26,7 +25,6 @@ export const getAllMicrophones = async (): Promise<MediaDeviceInfo[]> => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     return devices.filter((device) => device.kind === "audioinput");
   } catch (error) {
-    console.error("Failed to get microphones:", error);
     return [];
   }
 };
@@ -39,7 +37,6 @@ export const getAllSpeakers = async (): Promise<MediaDeviceInfo[]> => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     return devices.filter((device) => device.kind === "audiooutput");
   } catch (error) {
-    console.error("Failed to get speakers:", error);
     return [];
   }
 };
@@ -47,20 +44,12 @@ export const getAllSpeakers = async (): Promise<MediaDeviceInfo[]> => {
 /**
  * Get all available media devices grouped by type
  */
-export const getAllDevices = async () => {
+export const getAllDevices = async (): Promise<MediaDeviceInfo[]> => {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
-
-    const cameras = devices.filter((device) => device.kind === "videoinput");
-    const microphones = devices.filter(
-      (device) => device.kind === "audioinput"
-    );
-    const speakers = devices.filter((device) => device.kind === "audiooutput");
-
-    return { cameras, microphones, speakers };
-  } catch (error) {
-    console.error("Failed to get devices:", error);
-    return { cameras: [], microphones: [], speakers: [] };
+    return devices;
+  } catch (err) {
+    return [];
   }
 };
 
@@ -133,7 +122,6 @@ export const createMediaStream = async (options: {
       };
 }): Promise<MediaStream | null> => {
   if (!navigator.mediaDevices?.getUserMedia) {
-    console.error("getUserMedia is not supported");
     return null;
   }
 
@@ -174,7 +162,6 @@ export const createMediaStream = async (options: {
 
     return await navigator.mediaDevices.getUserMedia(constraints);
   } catch (error) {
-    console.error("Failed to create media stream:", error);
     return null;
   }
 };
@@ -194,18 +181,15 @@ export const stopMediaStream = (stream: MediaStream | null): void => {
 export const setAudioOutputDevice = async (
   audioElement: HTMLAudioElement,
   deviceId: string
-): Promise<boolean> => {
-  if (!("setSinkId" in audioElement)) {
-    console.warn("setSinkId is not supported");
-    return false;
-  }
-
-  try {
-    await (audioElement as any).setSinkId(deviceId);
-    return true;
-  } catch (error) {
-    console.error("Failed to set audio output device:", error);
-    return false;
+): Promise<void> => {
+  if ("setSinkId" in audioElement) {
+    try {
+      await audioElement.setSinkId(deviceId);
+    } catch (err) {
+      // Failed to set audio output, handle silently
+    }
+  } else {
+    // setSinkId not supported
   }
 };
 
@@ -251,7 +235,6 @@ export const getMediaPermissions = async (): Promise<{
       microphone: microphonePermission.state,
     };
   } catch (error) {
-    console.error("Failed to get media permissions:", error);
     return {
       camera: "prompt" as PermissionState,
       microphone: "prompt" as PermissionState,
@@ -274,7 +257,6 @@ export const requestMediaPermissions = async (
     }
     return false;
   } catch (error) {
-    console.error("Failed to request media permissions:", error);
     return false;
   }
 };

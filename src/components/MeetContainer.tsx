@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useMediaDevices } from "../hooks/useMediaDevices";
 import { useState } from "react";
 import WebcamToolBar from "./WebcamToolBar";
@@ -52,90 +52,91 @@ const MeetContainer = ({
 
   const { cameraOn, microphoneOn } = mediaState;
 
-  const applyCameraSettings = (
-    ctx: CanvasRenderingContext2D,
-    canvas: HTMLCanvasElement,
-    video: HTMLVideoElement
-  ) => {
-    const { flip, rotate, ratio } = cameraSettings;
+  const applyCameraSettings = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      canvas: HTMLCanvasElement,
+      video: HTMLVideoElement
+    ) => {
+      const { flip, rotate, ratio } = cameraSettings;
 
-    // Check if video has valid dimensions
-    if (!video.videoWidth || !video.videoHeight) {
-      return;
-    }
-
-    // Set canvas dimensions based on ratio setting first
-    let drawWidth = video.videoWidth;
-    let drawHeight = video.videoHeight;
-
-    if (ratio === "video") {
-      // 16:9 aspect ratio
-      const aspectRatio = 16 / 9;
-      if (drawWidth / drawHeight > aspectRatio) {
-        drawHeight = drawWidth / aspectRatio;
-      } else {
-        drawWidth = drawHeight * aspectRatio;
+      // Check if video has valid dimensions
+      if (!video.videoWidth || !video.videoHeight) {
+        return;
       }
-    } else if (ratio === "square") {
-      // 1:1 aspect ratio
-      const size = Math.min(drawWidth, drawHeight);
-      drawWidth = size;
-      drawHeight = size;
-    }
 
-    // Set canvas size based on rotation - swap dimensions for 90/270 degree rotations
-    if (rotate === 90 || rotate === 270) {
-      canvas.width = drawHeight;
-      canvas.height = drawWidth;
-    } else {
-      canvas.width = drawWidth;
-      canvas.height = drawHeight;
-    }
+      // Set canvas dimensions based on ratio setting first
+      let drawWidth = video.videoWidth;
+      let drawHeight = video.videoHeight;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (ratio === "video") {
+        // 16:9 aspect ratio
+        const aspectRatio = 16 / 9;
+        if (drawWidth / drawHeight > aspectRatio) {
+          drawHeight = drawWidth / aspectRatio;
+        } else {
+          drawWidth = drawHeight * aspectRatio;
+        }
+      } else if (ratio === "square") {
+        // 1:1 aspect ratio
+        const size = Math.min(drawWidth, drawHeight);
+        drawWidth = size;
+        drawHeight = size;
+      }
 
-    // Save context state
-    ctx.save();
+      // Set canvas size based on rotation - swap dimensions for 90/270 degree rotations
+      if (rotate === 90 || rotate === 270) {
+        canvas.width = drawHeight;
+        canvas.height = drawWidth;
+      } else {
+        canvas.width = drawWidth;
+        canvas.height = drawHeight;
+      }
 
-    // Move to center of canvas for rotation
-    ctx.translate(canvas.width / 2, canvas.height / 2);
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Apply rotation
-    if (rotate === 90) {
-      ctx.rotate((90 * Math.PI) / 180);
-    } else if (rotate === 180) {
-      ctx.rotate(Math.PI);
-    } else if (rotate === 270) {
-      ctx.rotate((270 * Math.PI) / 180);
-    }
+      // Save context state
+      ctx.save();
 
-    // Apply flip (horizontal mirror)
-    if (flip) {
-      ctx.scale(-1, 1);
-    }
+      // Move to center of canvas for rotation
+      ctx.translate(canvas.width / 2, canvas.height / 2);
 
-    // Draw the video centered
-    ctx.drawImage(
-      video,
-      -video.videoWidth / 2,
-      -video.videoHeight / 2,
-      video.videoWidth,
-      video.videoHeight
-    );
+      // Apply rotation
+      if (rotate === 90) {
+        ctx.rotate((90 * Math.PI) / 180);
+      } else if (rotate === 180) {
+        ctx.rotate(Math.PI);
+      } else if (rotate === 270) {
+        ctx.rotate((270 * Math.PI) / 180);
+      }
 
-    // Restore context state
-    ctx.restore();
-  };
+      // Apply flip (horizontal mirror)
+      if (flip) {
+        ctx.scale(-1, 1);
+      }
+
+      // Draw the video centered
+      ctx.drawImage(
+        video,
+        -video.videoWidth / 2,
+        -video.videoHeight / 2,
+        video.videoWidth,
+        video.videoHeight
+      );
+
+      // Restore context state
+      ctx.restore();
+    },
+    [cameraSettings]
+  );
 
   const toggleCamera = async () => {
     if (!cameraOn) {
       const stream = await getMediaStream(true, microphoneOn);
       if (stream && videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play().catch((err) => {
-          console.error("Video play error:", err);
-        });
+        await videoRef.current.play().catch(() => {});
         // Start drawing on canvas
         if (videoRef.current && canvasRef.current) {
           const startDrawing = () => {
@@ -231,7 +232,7 @@ const MeetContainer = ({
         try {
           await (audioRef.current as HTMLAudioElement).setSinkId(deviceId);
         } catch (err) {
-          console.error("Failed to set audio output device:", err);
+          // Failed to set speaker, handle silently or log
         }
       }
     }
@@ -270,7 +271,7 @@ const MeetContainer = ({
       };
       startDrawing();
     }
-  }, [cameraSettings, cameraOn]);
+  }, [cameraSettings, cameraOn, applyCameraSettings]);
 
   useEffect(() => {
     return () => {
@@ -286,19 +287,21 @@ const MeetContainer = ({
         <div className="relative w-full h-full flex items-center justify-center gap-4">
           <div className="absolute inset-0 flex items-center justify-center">
             {pinnedStreams ? (
-              <ParticipantOverlay
-                socketId={pinnedStreams}
-                name={
-                  remoteParticipants.find((p) => p.id === pinnedStreams)
-                    ?.name || ""
-                }
-                stream={
-                  remoteParticipants.find((p) => p.id === pinnedStreams)
-                    ?.stream!
-                }
-                isPinned={true}
-                onPin={() => togglePin(pinnedStreams)}
-              />
+              (() => {
+                const pinnedParticipant = remoteParticipants.find(
+                  (p) => p.id === pinnedStreams
+                );
+                if (!pinnedParticipant) return null;
+                return (
+                  <ParticipantOverlay
+                    socketId={pinnedStreams}
+                    name={pinnedParticipant.name}
+                    stream={pinnedParticipant.stream}
+                    isPinned={true}
+                    onPin={() => togglePin(pinnedStreams)}
+                  />
+                );
+              })()
             ) : remoteParticipants.length > 0 ? (
               <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-4 pt-20 pb-32">
                 {remoteParticipants.map((participant) => (
