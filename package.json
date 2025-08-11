@@ -1,0 +1,85 @@
+{
+  "name": "react-meet",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A modern React webcam library with beautiful UI components and enhanced user experience",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:watch": "vite build --watch",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run type-check && npm run build"
+  },
+  "keywords": [
+    "react",
+    "webcam",
+    "camera",
+    "video",
+    "ui",
+    "components",
+    "typescript",
+    "modern",
+    "library"
+  ],
+  "author": "Divyanshu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/react-meet.git"
+  },
+  "homepage": "https://github.com/yourusername/react-meet#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/react-meet/issues"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js"
+    },
+    "./styles": "./dist/style.css"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-toast": "^1.2.14",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@tailwindcss/vite": "^4.1.11",
+    "gsap": "^3.13.0",
+    "lucide-react": "^0.536.0",
+    "motion": "^12.23.12",
+    "react-responsive": "^10.0.1",
+    "tailwindcss": "^4.1.11"
+  }
+}
