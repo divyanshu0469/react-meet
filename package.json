@@ -1,6 +1,6 @@
 {
   "name": "react-meet",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "A modern React webcam library with beautiful UI components and enhanced user experience",
   "main": "dist/index.js",
