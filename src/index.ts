@@ -12,8 +12,8 @@ export { default as WebcamOverlay } from "./components/WebcamOverlay";
 export * from "./types";
 
 // Hooks
-export { default as useMediaDevices } from "./hooks/useMediaDevices";
-export { default as useOptional } from "./hooks/useOptional";
+export { useMediaDevices } from "./hooks/useMediaDevices";
+export { useOptional } from "./hooks/useOptional";
 
 // Utilities - Individual device functions
 export {
@@ -38,6 +38,8 @@ export {
   onDeviceChange,
 } from "./utils/mediaDeviceUtils";
 
+// Utility class
 export { default as MediaDeviceUtils } from "./utils/mediaDeviceUtils";
 
+// Import global styles
 import "./global.css";
