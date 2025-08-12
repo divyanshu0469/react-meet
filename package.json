@@ -13,10 +13,10 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npx tsc --emitDeclarationOnly",
+    "build": "vite build && tsc --declaration --emitDeclarationOnly --outDir dist",
     "build:watch": "vite build --watch",
     "preview": "vite preview",
-    "type-check": "npx tsc --noEmit",
+    "type-check": "tsc",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest",
     "test:ui": "vitest --ui",
