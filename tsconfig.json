@@ -8,7 +8,6 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
@@ -21,9 +20,7 @@
 
     /* Library specific */
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "dist",
-    "declarationDir": "dist"
+    "outDir": "dist"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "examples"]

@@ -1,11 +1,19 @@
 {
   "name": "react-meet",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "type": "module",
   "description": "A modern React webcam library with beautiful UI components and enhanced user experience",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js"
+    },
+    "./styles": "./dist/style.css"
+  },
   "files": [
     "dist",
     "README.md",
@@ -13,10 +21,10 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc --declaration --emitDeclarationOnly --outDir dist",
+    "build": "vite build && tsc --emitDeclarationOnly --outDir dist",
     "build:watch": "vite build --watch",
     "preview": "vite preview",
-    "type-check": "tsc",
+    "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -33,7 +41,9 @@
     "components",
     "typescript",
     "modern",
-    "library"
+    "library",
+    "meet",
+    "meeting"
   ],
   "author": "Divyanshu",
   "license": "MIT",
@@ -63,17 +73,6 @@
     "typescript": "^5.5.4",
     "vite": "^6.0.5"
   },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.js"
-    },
-    "./styles": "./dist/style.css"
-  },
-  "sideEffects": [
-    "**/*.css"
-  ],
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -87,5 +86,8 @@
     "motion": "^12.23.12",
     "react-responsive": "^10.0.1",
     "tailwindcss": "^4.1.11"
-  }
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
 }
